@@ -6,9 +6,11 @@ import androidx.fragment.app.Fragment
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Button
 import androidx.lifecycle.Observer
 import androidx.lifecycle.ViewModelProvider
 import androidx.navigation.fragment.findNavController
+import com.bumptech.glide.Glide
 import com.example.dogapp.databinding.FragmentFirstBinding
 
 /**
@@ -16,40 +18,34 @@ import com.example.dogapp.databinding.FragmentFirstBinding
  */
 class FirstFragment : Fragment() {
 
-    private var _binding: FragmentFirstBinding? = null
-
-    // This property is only valid between onCreateView and
-    // onDestroyView.
-    private val binding get() = _binding!!
-
     private lateinit var viewModel: PictureViewModel
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
         savedInstanceState: Bundle?
-    ): View? {
-
-        viewModel = ViewModelProvider(this).get(PictureViewModel::class.java)
-        viewModel.picture.observe(this, Observer { picture ->
-            Log.d("PictureViewModel", picture.message)
-        })
-
-        viewModel.getRandomDogImage()
-        _binding = FragmentFirstBinding.inflate(inflater, container, false)
-        return binding.root
-
+    ): View {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_first, container, false)
     }
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-        binding.buttonFirst.setOnClickListener {
+        viewModel = ViewModelProvider(this).get(PictureViewModel::class.java)
+
+        viewModel.picture.observe(viewLifecycleOwner, Observer { picture ->
+            picture.message?.let { imageUrl ->
+                Glide.with(this).load(imageUrl).into(view.findViewById(R.id.imageView_dog))
+            }
+        })
+
+        viewModel.getRandomDogImage()
+
+        view.findViewById<Button>(R.id.button_get_image).setOnClickListener {
+            viewModel.getRandomDogImage()
+        }
+        view.findViewById<Button>(R.id.button_second_fragment).setOnClickListener {
             findNavController().navigate(R.id.action_FirstFragment_to_SecondFragment)
         }
-    }
-
-    override fun onDestroyView() {
-        super.onDestroyView()
-        _binding = null
     }
 }
