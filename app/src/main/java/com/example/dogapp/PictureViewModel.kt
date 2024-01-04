@@ -40,4 +40,13 @@ class PictureViewModel(private val context: Context) : ViewModel() {
             editor.apply()
         }
     }
+
+    fun deleteImage(imageUrl: String) {
+        val sharedPref = context.getSharedPreferences("DogAppPrefs", Context.MODE_PRIVATE)
+        val editor = sharedPref.edit()
+        val currentSet = sharedPref.getStringSet("savedImages", mutableSetOf())?.toMutableSet() ?: mutableSetOf()
+        currentSet.remove(imageUrl)
+        editor.putStringSet("savedImages", currentSet)
+        editor.apply()
+    }
 }

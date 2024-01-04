@@ -1,0 +1,7 @@
+<resources>
+    <style name="MyButtonStyle" parent="Widget.AppCompat.Button">
+        <item name="android:textSize">18sp</item>
+        <item name="android:textColor">#FFFFFF</item>
+        <item name="android:background">@color/purple_200</item>
+    </style>
+</resources>
