@@ -35,6 +35,7 @@ class SecondFragment : Fragment() {
         savedInstanceState: Bundle?
     ): View? {
 
+        // Used for accessing the fragmented views
         _binding = FragmentSecondBinding.inflate(inflater, container, false)
         return binding.root
 
@@ -46,9 +47,11 @@ class SecondFragment : Fragment() {
         val factory = PictureViewModelFactory(requireActivity().application)
         viewModel = ViewModelProvider(this, factory).get(PictureViewModel::class.java)
 
+        //Retrieves DogAppPrefs file for persistent storage
         val sharedPref = activity?.getSharedPreferences("DogAppPrefs", Context.MODE_PRIVATE)
         val savedImages = sharedPref?.getStringSet("savedImages", setOf())?.toMutableSet() ?: mutableSetOf()
 
+        // Dynamically render each image with set styling
         savedImages.forEach { imageUrl ->
             val imageLayout = LinearLayout(context).apply {
                 orientation = LinearLayout.VERTICAL
@@ -56,13 +59,6 @@ class SecondFragment : Fragment() {
                     LinearLayout.LayoutParams.MATCH_PARENT,
                     LinearLayout.LayoutParams.WRAP_CONTENT
                 )
-            }
-
-            val imageViewLayoutParams = LinearLayout.LayoutParams(
-                LinearLayout.LayoutParams.MATCH_PARENT,
-                LinearLayout.LayoutParams.WRAP_CONTENT
-            ).apply {
-                setMargins(0, 20, 0, 20) // top and bottom margins
             }
 
             val imageView = ImageView(context).apply {
@@ -90,7 +86,6 @@ class SecondFragment : Fragment() {
                 textSize = 18f
                 setTextColor(Color.WHITE)
                 background = ContextCompat.getDrawable(context, R.drawable.rounded_button)
-                // Set other attributes if needed
                 layoutParams = buttonLayoutParams
                 setOnClickListener {
                     viewModel.deleteImage(imageUrl)
@@ -102,14 +97,6 @@ class SecondFragment : Fragment() {
             imageLayout.addView(deleteButton)
             binding.imagesContainer.addView(imageLayout)
         }
-    }
-
-    private fun removeImageFromPreferences(imageUrl: String, sharedPref: SharedPreferences?) {
-        val editor = sharedPref?.edit()
-        val currentSet = sharedPref?.getStringSet("savedImages", setOf())?.toMutableSet()
-        currentSet?.remove(imageUrl)
-        editor?.putStringSet("savedImages", currentSet)
-        editor?.apply()
     }
 
     override fun onDestroyView() {

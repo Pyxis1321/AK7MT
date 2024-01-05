@@ -31,18 +31,24 @@ class FirstFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
+        // Here a instance of PictureViewModelFactory is created
         val factory = PictureViewModelFactory(requireActivity().application)
-        viewModel = ViewModelProvider(this, factory).get(PictureViewModel::class.java)
-        viewModel = ViewModelProvider(this).get(PictureViewModel::class.java)
+        // ViewModel initialization
+        viewModel = ViewModelProvider(this, factory)[PictureViewModel::class.java]
 
+        // Here we set up an observer, we observe change in picture, if API call is made and picture
+        // property changes in ViewModel, we update the image on screen with new a one
+        // R in the glide function is a java class that references the project resources, in this
+        // case our ImageView
         viewModel.picture.observe(viewLifecycleOwner, Observer { picture ->
-            picture.message?.let { imageUrl ->
+            picture.message.let { imageUrl ->
                 Glide.with(this).load(imageUrl).into(view.findViewById(R.id.imageView_dog))
             }
         })
 
+        // Loads initial picture when app opens
         viewModel.getRandomDogImage()
-
+        // Adding listeners to buttons
         view.findViewById<Button>(R.id.button_get_image).setOnClickListener {
             viewModel.getRandomDogImage()
         }

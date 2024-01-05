@@ -13,13 +13,16 @@ import androidx.lifecycle.viewModelScope
 import kotlinx.coroutines.launch
 
 class PictureViewModel(private val context: Context) : ViewModel() {
+    // Instance of repository
     private val repository = PictureRepository(RetrofitClient.instance)
-
+    // We make a LiveData observable so FirstFragment can see changes made to this variable
     private val _picture = MutableLiveData<PictureModel>()
+    // Public version of the variable for outside exposure, adds abstraction
     val picture: LiveData<PictureModel>
         get() = _picture
 
     fun getRandomDogImage() {
+        // Uses coroutine to call the API
         viewModelScope.launch {
             try {
                 val response = repository.getRandomDogImage()
@@ -31,6 +34,11 @@ class PictureViewModel(private val context: Context) : ViewModel() {
     }
 
     fun saveCurrentImage() {
+        // method for saving image Urls, we first call for a file named DogAppPrefs, we create an
+        // editor for him
+        // Then we retrieve a set of strings with the key "savedImages"
+        // As SharedPreferences returns a set that can't be modified we cast it toMutableSet which
+        // creates a copy we can add a string to
         _picture.value?.let { picture ->
             val sharedPref = context.getSharedPreferences("DogAppPrefs", Context.MODE_PRIVATE)
             val editor = sharedPref.edit()
